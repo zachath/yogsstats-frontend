@@ -3,6 +3,7 @@ import Layout from "../components/Layout";
 import { Chart } from "react-google-charts";
 
 import SetDate from '../components/SetDateComponent'
+import * as Utils from './js/util'
 
 const options = {
     titleTextStyle: {
@@ -20,14 +21,6 @@ function jsonToTable(data) {
         results.push([key, data[key]])
     }
     return results
-}
-
-function buildDate(date) {
-    var dd = String(date.getDate()).padStart(2, '0');
-    var mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
-    var yyyy = date.getFullYear();
-
-    return yyyy + '-' + mm + '-' + dd;
 }
 
 const WinsByTeam = () => {
@@ -50,11 +43,11 @@ const WinsByTeam = () => {
 
     const [from, setFrom] = useState('2022-10-23')
     const handleChangeFrom = (e) => {
-        setFrom(buildDate(e.$d))
+        setFrom(Utils.buildDate(e.$d))
     }
-    const [to, setTo] = useState(buildDate(new Date()))
+    const [to, setTo] = useState(Utils.buildDate(new Date()))
     const handleChangeTo = (e) => {
-        setTo(buildDate(e.$d))
+        setTo(Utils.buildDate(e.$d))
     }
 
     return (
