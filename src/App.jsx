@@ -12,15 +12,18 @@ import TraitorPage from './pages/TraitorComboWinPercentage';
 import WinsPage from './pages/WinsByTeam'
 
 const theme = createTheme({
+    palette: {
+        mode: 'dark',
+      },
     components: {
         MuiCssBaseline: {
             styleOverrides: `
             a, a:visited {
-                color: black;
+                color: white;
                 text-decoration: none;
             }
             a:hover {
-                color: black;
+                color: white;
             }
             `,
         }

@@ -4,7 +4,7 @@ import Layout from "../components/Layout";
 const MainPage = () => {
     return (
         <Layout>
-            <h1>LANDING PAGE</h1>
+            <h1>Welcome to YogsStats, the home of Yogscast related TTT stats!</h1>
         </Layout>
     )
 }

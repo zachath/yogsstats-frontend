@@ -1,8 +1,9 @@
-import React from "react";
-import { Drawer } from "@mui/material";
+import React from 'react';
+import { Drawer } from '@mui/material';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
+import Logo from './images/Y.png'
+
 import Nav from './Nav'
 
 const SideBar = ({ sideBarWidth }) => {
@@ -16,13 +17,11 @@ const SideBar = ({ sideBarWidth }) => {
                 boxSizing: 'border-box',
             },
             }}
-            variant="permanent"
-            anchor="left"
+            variant='permanent'
+            anchor='left'
         >
             <Toolbar>
-                <Typography>
-                    [IMAGE]
-                </Typography>
+                <img alt={'A green Y'} src={Logo} style={{width: '50px', height: '50px'}}/>
             </Toolbar>
             <Divider />
             <Nav />
