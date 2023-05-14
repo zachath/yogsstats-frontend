@@ -41,9 +41,14 @@ const SetDateComponent = (props) => {
                         <DateSelector onChange={props.handleChangeTo} label={'To date'} value={new Date()} minDate={'2022-10-23'} maxDate={new Date()}/>
                     </Item>
                 </Stack>
-                <Item>
+                <Stack spacing={2} direction={'row'} alignItems={'center'} justifyContent={'center'}>
+                    <Item>
                         <Button onClick={() => {props.refresh()}} variant='contained'>Refresh</Button>
-                </Item>
+                    </Item>
+                    <Item>
+                        {props.children}
+                    </Item>
+                </Stack>
             </Stack>
         </LocalizationProvider>
     )

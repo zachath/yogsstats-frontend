@@ -1,26 +1,49 @@
 import React, { useState, useEffect } from "react";
-import { DataGrid } from '@mui/x-data-grid';
 import Layout from "../components/Layout";
+import { Chart } from "react-google-charts";
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 import SetDate from '../components/SetDateComponent'
 import * as Utils from './js/util'
 
-const cols = [
-    { field: 'player', label: 'Player', flex: 1},
-    { field: 'winPercentage', label: 'Win percentage', flex: 1},
-    { field: 'roundsPlayed', label: 'Rounds played', type: 'number', flex: 1}
-]
+function jsonToTable(data) {
+    let results = [['Player', 'Win percentage', 'Average (weighted)']]
+
+    let weights = 0
+    let dividend = 0
+
+    for (let key in data) {
+        weights += data[key].roundsPlayed
+        dividend += data[key].roundsPlayed * data[key].winPercentage
+    }
+
+    let average = dividend / weights
+
+    for (let key in data) {
+        results.push([data[key].player+` (${data[key].roundsPlayed})`, data[key].winPercentage, average])
+    }
+    return results
+}
+
+const options = {
+    title: 'Detecte win percentage divided by player (Rounds played in parentheses)',
+    vAxis: { title: 'Detecte win percentage', textStyle: { color: 'white' }, titleTextStyle: {color: 'white'}},
+    hAxis: { title: 'Player', textStyle: { color: 'white' }, titleTextStyle: {color: 'white'}},
+    seriesType: 'bars',
+    series: {1: { type: 'line' }},
+    titleTextStyle: {color: 'white'},
+    legend: { textStyle: { color: 'white' } },
+    backgroundColor: '#121212',
+}
 
 const DetectiveWinPercentage = () => {
     const [players, setPlayers] = useState([])
 
     const handleFetch = () => {
-        fetch('http://localhost:8080/stats/ttt/detectiveWinPercentage?round=true&canon=false&from='+from+'&to='+to)
+        fetch('http://localhost:8080/stats/ttt/detectiveWinPercentage?round=true&canon='+canon+'&from='+from+'&to='+to)
             .then((response) => response.json())
             .then((data) => {
-                for (let i = 0; i < data.players.length; i++) {
-                    data.players[i].winPercentage = (data.players[i].winPercentage*100).toFixed(1)+'%'
-                }
                 setPlayers(data.players)
             })
             .catch((err) => {
@@ -40,14 +63,18 @@ const DetectiveWinPercentage = () => {
     const handleChangeTo = (e) => {
         setTo(Utils.buildDate(e.$d))
     }
-
-    console.log(players)
+    const [canon, setCanon] = useState(false)
+    const handleChangeCanon = (e) => {
+        setCanon(!canon)
+    }
 
     return (
         <Layout spacing={1}>
             <h1>Detective Win Percentage</h1>
-            <SetDate refresh={handleFetch} handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo}/>
-                <DataGrid autoHeight {...players} getRowId={(row) => Utils.generateStringId(row.player)} columns={cols} rows={players}/>
+            <SetDate refresh={handleFetch} handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo}>
+                <FormControlLabel control={<Checkbox onChange={handleChangeCanon}/>} label='Only include canon rounds'/>
+            </SetDate>
+            <Chart chartType='ComboChart' width={'100%'} height={'600px'} data={jsonToTable(players)} options={options}/>
         </Layout>
     )
 }
