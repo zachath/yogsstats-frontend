@@ -6,9 +6,9 @@ import SetDate from '../components/SetDateComponent'
 import * as Utils from './js/util'
 
 const cols = [
-    { field: 'Player', label: 'Player', flex: 1},
-    { field: 'WinRate', label: 'Win rate', flex: 1},
-    { field: 'RoundsPlayed', label: 'Rounds played', type: 'number', flex: 1}
+    { field: 'player', label: 'Player', flex: 1},
+    { field: 'winPercentage', label: 'Win percentage', flex: 1},
+    { field: 'roundsPlayed', label: 'Rounds played', type: 'number', flex: 1}
 ]
 
 const DetectiveWinPercentage = () => {
@@ -19,7 +19,7 @@ const DetectiveWinPercentage = () => {
             .then((response) => response.json())
             .then((data) => {
                 for (let i = 0; i < data.players.length; i++) {
-                    data.players[i].WinRate = (data.players[i].WinRate*100).toFixed(1)+'%'
+                    data.players[i].winPercentage = (data.players[i].winPercentage*100).toFixed(1)+'%'
                 }
                 setPlayers(data.players)
             })
@@ -41,11 +41,13 @@ const DetectiveWinPercentage = () => {
         setTo(Utils.buildDate(e.$d))
     }
 
+    console.log(players)
+
     return (
         <Layout spacing={1}>
             <h1>Detective Win Percentage</h1>
             <SetDate refresh={handleFetch} handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo}/>
-                <DataGrid autoHeight {...players} getRowId={(row) => Utils.generateStringId(row.Player)} columns={cols} rows={players}/>
+                <DataGrid autoHeight {...players} getRowId={(row) => Utils.generateStringId(row.player)} columns={cols} rows={players}/>
         </Layout>
     )
 }

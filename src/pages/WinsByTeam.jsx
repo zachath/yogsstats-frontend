@@ -12,13 +12,13 @@ const options = {
     backgroundColor: '#121212',
     legend: 'none',
     pieSliceText: 'label',
-    colors: ['pink', '#8b0000', 'brown', 'green', 'purple', '#FF69B4', 'red', 'black'] //TODO: Maybe declare team colors in API?
+    colors: ['green', 'red', 'black', 'purple', 'pink', '#8b0000', 'brown', '#FF69B4'] //TODO: Maybe declare team colors in API?
 }
 
 function jsonToTable(data) {
     let results = [["Team", "Wins"]]
     for (let key in data) {
-        results.push([key, data[key]])
+        results.push([data[key].team, data[key].wins])
     }
     return results
 }
@@ -27,7 +27,7 @@ const WinsByTeam = () => {
     const [wins, setWins] = useState([])
 
     const handleFetch = () => {
-        fetch('https://yogsstats.com/stats/ttt/teamWins?from='+from+'&to='+to)
+        fetch('http://localhost:8080/stats/ttt/teamWins?from='+from+'&to='+to)
             .then((response) => response.json())
             .then((data) => {
                 setWins(data.teams)
