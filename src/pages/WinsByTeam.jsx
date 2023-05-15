@@ -52,7 +52,6 @@ const WinsByTeam = () => {
 
     return (
         <Layout>
-            <h1>Wins divided by teams</h1>
             <SetDate refresh={handleFetch} handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo}/>
             <Chart chartType="PieChart" data={jsonToTable(wins)} options={options} width={'100%'} height={'600px'}/>
         </Layout>

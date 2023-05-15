@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import Layout from "../components/Layout";
 import { Chart } from "react-google-charts";
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
+import Layout from "../components/Layout";
 import SetDate from '../components/SetDateComponent'
 import * as Utils from './js/util'
 
@@ -27,8 +27,8 @@ function jsonToTable(data) {
 }
 
 const options = {
-    title: 'Detecte win percentage divided by player (Rounds played in parentheses)',
-    vAxis: { title: 'Detecte win percentage', textStyle: { color: 'white' }, titleTextStyle: {color: 'white'}},
+    title: 'Detective win percentage divided by player (Rounds played in parentheses)',
+    vAxis: { title: 'Detective win percentage', textStyle: { color: 'white' }, titleTextStyle: {color: 'white'}},
     hAxis: { title: 'Player', textStyle: { color: 'white' }, titleTextStyle: {color: 'white'}},
     seriesType: 'bars',
     series: {1: { type: 'line' }},
@@ -70,7 +70,6 @@ const DetectiveWinPercentage = () => {
 
     return (
         <Layout spacing={1}>
-            <h1>Detective Win Percentage</h1>
             <SetDate refresh={handleFetch} handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo}>
                 <FormControlLabel control={<Checkbox onChange={handleChangeCanon}/>} label='Only include canon rounds'/>
             </SetDate>
