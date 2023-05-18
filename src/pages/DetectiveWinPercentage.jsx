@@ -28,7 +28,7 @@ function jsonToTable(data) {
 
 const options = {
     title: 'Detective win percentage divided by player (Rounds played in parentheses)',
-    vAxis: { title: 'Detective win percentage', textStyle: { color: 'white' }, titleTextStyle: {color: 'white'}},
+    vAxis: { title: 'Detective win percentage', textStyle: { color: 'white' }, titleTextStyle: {color: 'white'}, viewWindow: { min: 0, max: 1}},
     hAxis: { title: 'Player', textStyle: { color: 'white' }, titleTextStyle: {color: 'white'}},
     seriesType: 'bars',
     series: {1: { type: 'line' }},
@@ -39,21 +39,6 @@ const options = {
 
 const DetectiveWinPercentage = () => {
     const [players, setPlayers] = useState([])
-
-    const handleFetch = () => {
-        fetch('http://localhost:8080/stats/ttt/detectiveWinPercentage?round=true&canon='+canon+'&from='+from+'&to='+to)
-            .then((response) => response.json())
-            .then((data) => {
-                setPlayers(data.players)
-            })
-            .catch((err) => {
-                console.log(err.message)
-            })
-    }
-    useEffect(() => {
-        handleFetch()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
 
     const [from, setFrom] = useState('2022-10-23')
     const handleChangeFrom = (e) => {
@@ -68,9 +53,24 @@ const DetectiveWinPercentage = () => {
         setCanon(!canon)
     }
 
+    const handleFetch = () => {
+        fetch('http://localhost:8080/stats/ttt/detectiveWinPercentage?round=true&canon='+canon+'&from='+from+'&to='+to)
+            .then((response) => response.json())
+            .then((data) => {
+                setPlayers(data.players)
+            })
+            .catch((err) => {
+                console.log(err.message)
+            })
+    }
+    useEffect(() => {
+        handleFetch()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [from, to, canon])
+
     return (
         <Layout spacing={1}>
-            <SetDate refresh={handleFetch} handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo}>
+            <SetDate handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo}>
                 <FormControlLabel control={<Checkbox onChange={handleChangeCanon}/>} label='Only include canon rounds'/>
             </SetDate>
             <Chart chartType='ComboChart' width={'100%'} height={'600px'} data={jsonToTable(players)} options={options}/>

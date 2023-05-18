@@ -4,7 +4,6 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
-import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
@@ -42,9 +41,6 @@ const SetDateComponent = (props) => {
                     </Item>
                 </Stack>
                 <Stack spacing={2} direction={'row'} alignItems={'center'} justifyContent={'center'}>
-                    <Item>
-                        <Button onClick={() => {props.refresh()}} variant='contained'>Refresh</Button>
-                    </Item>
                     <Item>
                         {props.children}
                     </Item>

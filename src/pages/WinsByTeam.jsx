@@ -12,7 +12,7 @@ const options = {
     backgroundColor: '#121212',
     legend: 'none',
     pieSliceText: 'label',
-    colors: ['green', 'red', 'black', 'purple', 'pink', '#8b0000', 'brown', '#FF69B4'] //TODO: Maybe declare team colors in API?
+    colors: []
 }
 
 function jsonToTable(data) {
@@ -26,7 +26,28 @@ function jsonToTable(data) {
 const WinsByTeam = () => {
     const [wins, setWins] = useState([])
 
+    const [from, setFrom] = useState('2022-10-23')
+    const handleChangeFrom = (e) => {
+        setFrom(Utils.buildDate(e.$d))
+    }
+    const [to, setTo] = useState(Utils.buildDate(new Date()))
+    const handleChangeTo = (e) => {
+        setTo(Utils.buildDate(e.$d))
+    }
+
     const handleFetch = () => {
+        fetch('http://localhost:8080/stats/ttt/teams')
+            .then((response) => response.json())
+            .then((data) => {
+                for (let key in data.teams) {
+                    if (data.teams[key].team !== 'none') {
+                        options.colors.push(data.teams[key].colour)
+                    }
+                }
+            })
+            .catch((err) => {
+                console.log(err.message)
+            })
         fetch('http://localhost:8080/stats/ttt/teamWins?from='+from+'&to='+to)
             .then((response) => response.json())
             .then((data) => {
@@ -39,16 +60,7 @@ const WinsByTeam = () => {
     useEffect(() => {
         handleFetch()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
-    const [from, setFrom] = useState('2022-10-23')
-    const handleChangeFrom = (e) => {
-        setFrom(Utils.buildDate(e.$d))
-    }
-    const [to, setTo] = useState(Utils.buildDate(new Date()))
-    const handleChangeTo = (e) => {
-        setTo(Utils.buildDate(e.$d))
-    }
+    }, [from, to])
 
     return (
         <Layout>

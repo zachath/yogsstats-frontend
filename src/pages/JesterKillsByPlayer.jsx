@@ -25,6 +25,15 @@ function jsonToTable(data) {
 const JesterKillsByPlayer = () => {
     const [kills, setKills] = useState([])
 
+    const [from, setFrom] = useState('2022-10-23')
+    const handleChangeFrom = (e) => {
+        setFrom(Utils.buildDate(e.$d))
+    }
+    const [to, setTo] = useState(Utils.buildDate(new Date()))
+    const handleChangeTo = (e) => {
+        setTo(Utils.buildDate(e.$d))
+    }
+
     const handleFetch = () => {
         fetch('http://localhost:8080/stats/ttt/jesterKills?from='+from+'&to='+to)
             .then((response) => response.json())
@@ -38,16 +47,7 @@ const JesterKillsByPlayer = () => {
     useEffect(() => {
         handleFetch()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
-    const [from, setFrom] = useState('2022-10-23')
-    const handleChangeFrom = (e) => {
-        setFrom(Utils.buildDate(e.$d))
-    }
-    const [to, setTo] = useState(Utils.buildDate(new Date()))
-    const handleChangeTo = (e) => {
-        setTo(Utils.buildDate(e.$d))
-    }
+    }, [from, to])
 
     return (
         <Layout>
