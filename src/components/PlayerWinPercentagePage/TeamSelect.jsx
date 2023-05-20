@@ -8,7 +8,7 @@ const TeamSelect = (props) => {
     return (
         <FormControl fullWidth>
             <InputLabel id='team-select'>Team</InputLabel>
-            <Select labelId="team-select" value={props.value} label='Team' onChange={props.handleChangeTeam}>
+            <Select labelId="team-select" value={props.value} label='Team' onChange={props.handleChangeTeam} defaultValue={'innocents'}>
                 {props.teams.map((team) => (
                     <MenuItem value={team} key={team}>{team}</MenuItem>
                 ))}

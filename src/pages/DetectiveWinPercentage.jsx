@@ -10,6 +10,11 @@ import * as Utils from './js/util'
 function jsonToTable(data) {
     let results = [['Player', 'Win percentage', 'Average (weighted)']]
 
+    if (data.length === 0) {
+        results[0].push({role: 'annotation', type: 'string'})
+        results.push(['', 0, 0, 'No data'])
+    }
+
     let weights = 0
     let dividend = 0
 
@@ -35,6 +40,16 @@ const options = {
     titleTextStyle: {color: 'white'},
     legend: { textStyle: { color: 'white' } },
     backgroundColor: '#121212',
+    annotations: {
+        stem: {
+            color: 'transparent',
+            length: 120
+        },
+        textStyle: {
+            color: '#9E9E9E',
+            fontSize: 18
+        }
+    },
 }
 
 const DetectiveWinPercentage = () => {
