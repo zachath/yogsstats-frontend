@@ -1,52 +1,140 @@
+import React, { useState } from "react";
 import { Typography } from "@mui/material";
-import { Stack } from "@mui/system";
-import React from "react";
 import Layout from "../components/Layout";
-import Paper from '@mui/material/Paper';
-import { styled } from '@mui/material/styles';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
-const Item = styled(Paper)(({ theme }) => ({
-    textAlign: 'center',
-}));
+import Grid from '@material-ui/core/Grid';
+import Link from '@mui/material/Link';
 
 const MainPage = () => {
+    const [roundCount, setRoundCount] = useState(0)
+    const [oldestDate, setOldestDate] = useState(null)
+    const [newestDate, setNewestDate] = useState(null)
+
+    const handleFetch = () => {
+        fetch('http://localhost:8080/stats/ttt/meta')
+            .then((response) => response.json())
+            .then((data) => {
+                setRoundCount(data.roundCount)
+                setOldestDate(data.oldestRound.date)
+                setNewestDate(data.newestRound.date)
+            })
+            .catch((err) => {
+                console.log(err.message)
+            })
+    }
+
+    if (roundCount === 0) {
+        handleFetch()
+        return
+    }
+
     return (
         <Layout>
             <h1>Welcome to YogsStats, the home of Yogscast related TTT stats!</h1>
-            <Stack spacing={4} alignItems={'center'} justifyContent={'center'} direction={'row'}>
-                <Item>
-                    <Typography>HERE GOES THE DESCRIPTION</Typography>
-                </Item>
-                {/*Make the accordion a component wichi takes a title & content*/}
-                <Item>
+            <Grid container justifyContent="center" spacing={10}>
+                <Grid item xs={6}>
+                    <Typography>
+                        This site tracks stats stats related to the <Link href="https://www.youtube.com/@yogscast">Yogscast</Link> TTT series on YouTube.
+                        They are dynamically updated after each video is uploaded. In every tab you see to the left there are stats such as detective win percentage 
+                        and the amount of jesters killed by each player and on the right you can find a description of each. A commonality between them all is the
+                        possibility to time splice the data by setting the from and to date, use it if you want to only include rounds from a specific year, month,
+                        week or even day.
+                    </Typography>
+                    <Typography>
+                        They don't take the game seriously so obviously neither should these stats :)
+                    </Typography>
+                    <Typography>
+                        Currently there are <strong>{roundCount}</strong> rounds stored, the oldest of which is from <strong>{oldestDate}</strong> and the latest from <strong>{newestDate}</strong>
+                    </Typography>
+                    <Typography>
+                        This site is unofficial and unrelated to the Yogscast. For any questions, send a dm to u/SgtTorran on reddit. <em>I have a tiny penis</em>
+                    </Typography>
+                </Grid>
+                <Grid item xs={6}>
                     <Accordion>
                         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                            An accordion
+                            Wins by Team
                         </AccordionSummary>
                         <AccordionDetails>
                             <Typography>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-                                malesuada lacus ex, sit amet blandit leo lobortis eget.
+                                A pie chart displaying the number of wins and win percentage of each team.
                             </Typography>
                         </AccordionDetails>
                     </Accordion>
                     <Accordion>
                         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                            Another accordion
+                            Detective win %
                         </AccordionSummary>
                         <AccordionDetails>
                             <Typography>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-                                malesuada lacus ex, sit amet blandit leo lobortis eget.
+                                Displays a bar graph of the win percentage as detective for each player.
+                                On the horizontal axis you'll find the players and on the vertical axis their win percentage.
+                                The weighted average win percentage is displayed as a line drawn horizontally through the graph.
+                                Has the extra option to only include <strong>"canon"</strong> rounds.
                             </Typography>
                         </AccordionDetails>
                     </Accordion>
-                </Item>
-            </Stack>
+                    <Accordion>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                            Player win %
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Typography>
+                                Displays a bar graph of the win percentage for each team for each player.
+                                On the horizontal axis you'll find the players and on the vertical axis their win percentage.
+                                The weighted average win percentage is displayed as a line drawn horizontally through the graph.
+                                To pick what team to display, use the select menu.
+                            </Typography>
+                        </AccordionDetails>
+                    </Accordion>
+                    <Accordion>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                            Traitor combo win %
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Typography>
+                                TODO
+                            </Typography>
+                        </AccordionDetails>
+                    </Accordion>
+                    <Accordion>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                            Role Win %
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Typography>
+                                Displays a bar graph of the win percentage for each role for each player.
+                                On the horizontal axis you'll find the players and on the vertical axis their win percentage.
+                                The weighted average win percentage is displayed as a line drawn horizontally through the graph.
+                                To pick what role to display, use the select menu.
+                            </Typography>
+                        </AccordionDetails>
+                    </Accordion>
+                    <Accordion>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                            Jester kills by player
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Typography>
+                                A pie chart displaying the number of jester kills by each player.
+                            </Typography>
+                        </AccordionDetails>
+                    </Accordion>
+                    <Accordion>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                            API
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Typography>
+                                This frontend send requests to the API available for everyone at <Link>https://api.yogsstats.com/stats/ttt</Link>, for api documentation see the readme on <Link href="https://github.com/zachath/yogsstats">Github</Link>.
+                            </Typography>
+                        </AccordionDetails>
+                    </Accordion>
+                </Grid>
+            </Grid>
         </Layout>
     )
 }
