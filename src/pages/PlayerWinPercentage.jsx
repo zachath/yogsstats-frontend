@@ -3,8 +3,9 @@ import { Chart } from "react-google-charts";
 
 import Layout from "../components/Layout";
 import SetDate from '../components/SetDateComponent'
-import * as Utils from './js/util'
+import * as Utils from '../js/util'
 import TeamSelect from '../components/PlayerWinPercentagePage/TeamSelect'
+import { useQuery } from "react-query";
 
 const options = {
     title: 'Players win percentage as each team (Rounds played in parentheses)',
@@ -28,22 +29,21 @@ const options = {
 }
 
 const PlayerWinPercentage = () => {
-    const [data, setData] = useState([])
+    const metaData = useQuery('meta', Utils.getMetaData);
+
     const [teams, setTeams] = useState([])
 
-    const [from, setFrom] = useState('2022-10-23')
+    const [from, setFrom] = useState(null)
     const handleChangeFrom = (e) => {
         setFrom(Utils.buildDate(e.$d))
     }
-    const [to, setTo] = useState(Utils.buildDate(new Date()))
+    const [minDate, setMinDate] = useState(null)
+
+    const [to, setTo] = useState(null)
     const handleChangeTo = (e) => {
         setTo(Utils.buildDate(e.$d))
     }
-
-    const [team, setTeam] = useState('innocents');
-    const handleChangeTeam = (event) => {
-        setTeam(event.target.value);
-    };
+    const [maxDate, setMaxDate] = useState(null)
 
     function jsonToTable(data) {
         let results = [['Player', 'Win percentage', 'Average (weighted)']]
@@ -82,50 +82,57 @@ const PlayerWinPercentage = () => {
         return results
     }
 
-    const fetchTeams = () => {
-        fetch('http://localhost:8080/stats/ttt/teams')
-            .then((response) => response.json())
-            .then((data) => {
-                let teams = []
-                for (let key in data.teams) {
-                    let team = data.teams[key].team 
-                    if (team !== 'none' && team !== 'bees') {
-                        teams.push(team)
-                    }
-                }
-                setTeams(teams)
-                setTeam(teams[0])
-            })
-            .catch((err) => {
-                console.log(err.message)
-            })
-    }
+    const teamData = useQuery('teamQuery', Utils.getTeams)
+    const [team, setTeam] = useState('');
+    const handleChangeTeam = (event) => {
+        setTeam(event.target.value);
+    };
 
-    const handleFetch = () => {
-        fetch('http://localhost:8080/stats/ttt/playerWinPercentage?round=true&from='+from+'&to='+to+'&team='+team)
+    const [data, setData] = useState(null)
+    const fetchData = () => {
+        fetch(`http://localhost:8080/stats/ttt/playerWinPercentage?round=true&from=${from}&to=${to}&team=${team}`)
             .then((response) => response.json())
-            .then((data) => {
-                setData(jsonToTable(data.players))
-            })
+            .then((data) => setData(jsonToTable(data.players)))
             .catch((err) => {
                 console.log(err.message)
             })
     }
     useEffect(() => {
-        handleFetch()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [from, to, team])
+        if (!metaData.isFetching && !metaData.isLoading && from === null && to === null) {
+            setFrom(metaData.data.oldestRound.date)
+            setMinDate(metaData.data.oldestRound.date)
+            setTo(metaData.data.newestRound.date)
+            setMaxDate(metaData.data.newestRound.date)
+        }
 
-    if (teams.length === 0) {
-        fetchTeams()
-        handleFetch()
-        return
-    }
+        if (!teamData.isFetching && !teamData.isLoading && team === '') {
+            let teams = []
+            for (let key in teamData.data.teams) {
+                let team = teamData.data.teams[key].team 
+                if (team !== 'none' && team !== 'bees') {
+                    teams.push(team)
+                }
+            }
+            setTeams(teams)
+            setTeam(teams[0])
+        }
+
+        if (from !== null && to !== null && team !== '') {
+            fetchData()
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [metaData.isFetching, metaData.isLoading, from, to, team])
+
+    if (metaData.isFetching || metaData.isLoading) return
+
+    if (from === null || to === null || team === '') return
+
+    if (data === null) return <h1>No data</h1>
 
     return (
         <Layout>
             <h1>Player win percentage</h1>
-            <SetDate refresh={handleFetch} handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo}>
+            <SetDate handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo} from={from} minDate={minDate} to={to} maxDate={maxDate}>
                 <TeamSelect value={team} teams={teams} handleChangeTeam={handleChangeTeam}/>
             </SetDate>
             <Chart chartType='ComboChart' width={'100%'} height={'600px'} data={data} options={options}/>

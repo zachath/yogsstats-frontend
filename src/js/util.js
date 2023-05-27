@@ -34,3 +34,8 @@ export async function getMetaData() {
     const { data } = await axios.get('https://yogsstats.com/stats/ttt/meta')
     return data
 }
+
+export async function getTeams() {
+    const { data } = await axios.get('http://localhost:8080/stats/ttt/teams')
+    return data
+}
