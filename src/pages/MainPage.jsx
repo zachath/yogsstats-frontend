@@ -52,6 +52,9 @@ const MainPage = () => {
                     <Typography>
                         This site is unofficial and unrelated to the Yogscast. For any questions, send a dm to u/SgtTorran on reddit. <em>I have a tiny penis</em>
                     </Typography>
+                    <Typography>
+                        Inspired by the work of the savant <Link href="https://www.reddit.com/user/TheImminentFate">u/TheImminentFate</Link> on Reddit.
+                    </Typography>
                 </Grid>
                 <Grid item xs={6}>
                     <Accordion>
