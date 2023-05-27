@@ -3,7 +3,8 @@ import Layout from "../components/Layout";
 import { Chart } from "react-google-charts";
 
 import SetDate from '../components/SetDateComponent'
-import * as Utils from './js/util'
+import * as Utils from '../js/util'
+import { useQuery } from "react-query";
 
 const options = {
     titleTextStyle: {
@@ -23,36 +24,53 @@ function jsonToTable(data) {
 }
 
 const JesterKillsByPlayer = () => {
-    const [kills, setKills] = useState([])
+    const metaData = useQuery('meta', Utils.getMetaData);
 
-    const [from, setFrom] = useState('2022-10-23')
+    const [from, setFrom] = useState(null)
     const handleChangeFrom = (e) => {
         setFrom(Utils.buildDate(e.$d))
     }
-    const [to, setTo] = useState(Utils.buildDate(new Date()))
+    const [minDate, setMinDate] = useState(null)
+
+    const [to, setTo] = useState(null)
     const handleChangeTo = (e) => {
         setTo(Utils.buildDate(e.$d))
     }
+    const [maxDate, setMaxDate] = useState(null)
 
-    const handleFetch = () => {
-        fetch('http://localhost:8080/stats/ttt/jesterKills?from='+from+'&to='+to)
+    const [data, setData] = useState([])
+    const fetchData = () => {
+        fetch(`http://localhost:8080/stats/ttt/jesterKills?from=${from}&to=${to}`)
             .then((response) => response.json())
-            .then((data) => {
-                setKills(data.players)
-            })
+            .then((data) => setData(data.players))
             .catch((err) => {
                 console.log(err.message)
             })
     }
     useEffect(() => {
-        handleFetch()
+        if (!metaData.isFetching && !metaData.isLoading && from === null && to === null) {
+            setFrom(metaData.data.oldestRound.date)
+            setMinDate(metaData.data.oldestRound.date)
+            setTo(metaData.data.newestRound.date)
+            setMaxDate(metaData.data.newestRound.date)
+        }
+
+        if (from !== null && to !== null) {
+            fetchData()
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [from, to])
+    }, [metaData.isFetching, metaData.isLoading, from, to])
+
+    if (metaData.isFetching || metaData.isLoading) return
+
+    if (from === null || to === null) return
+
+    if (data === null) return <h1>No data</h1>
 
     return (
         <Layout>
-            <SetDate refresh={handleFetch} handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo}/>
-            <Chart chartType="PieChart" data={jsonToTable(kills)} options={options} width={'100%'} height={'600px'}/>
+            <SetDate handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo} from={from} minDate={minDate} to={to} maxDate={maxDate}/>
+            <Chart chartType="PieChart" data={jsonToTable(data)} options={options} width={'100%'} height={'600px'}/>
         </Layout>
     )
 }
