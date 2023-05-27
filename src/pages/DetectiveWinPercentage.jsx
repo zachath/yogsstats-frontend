@@ -5,7 +5,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 
 import Layout from "../components/Layout";
 import SetDate from '../components/SetDateComponent'
-import * as Utils from './js/util'
+import * as Utils from '../js/util'
+import { useQuery } from "react-query";
 
 function jsonToTable(data) {
     let results = [['Player', 'Win percentage', 'Average (weighted)']]
@@ -53,42 +54,59 @@ const options = {
 }
 
 const DetectiveWinPercentage = () => {
-    const [players, setPlayers] = useState([])
+    
+    const metaData = useQuery('meta', Utils.getMetaData);
 
-    const [from, setFrom] = useState('2022-10-23')
+    const [from, setFrom] = useState(null)
     const handleChangeFrom = (e) => {
         setFrom(Utils.buildDate(e.$d))
     }
-    const [to, setTo] = useState(Utils.buildDate(new Date()))
+    const [minDate, setMinDate] = useState(null)
+
+    const [to, setTo] = useState(null)
     const handleChangeTo = (e) => {
         setTo(Utils.buildDate(e.$d))
     }
+    const [maxDate, setMaxDate] = useState(null)
+
     const [canon, setCanon] = useState(false)
     const handleChangeCanon = (e) => {
         setCanon(!canon)
     }
 
-    const handleFetch = () => {
-        fetch('http://localhost:8080/stats/ttt/detectiveWinPercentage?round=true&canon='+canon+'&from='+from+'&to='+to)
+    const [data, setData] = useState(null)
+    const fetchData = () => {
+        fetch(`http://localhost:8080/stats/ttt/detectiveWinPercentage?round=true&canon=${canon}&from=${from}&to=${to}`)
             .then((response) => response.json())
-            .then((data) => {
-                setPlayers(data.players)
-            })
-            .catch((err) => {
-                console.log(err.message)
-            })
+            .then((data) => setData(data.players))
     }
+
     useEffect(() => {
-        handleFetch()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [from, to, canon])
+        if (!metaData.isFetching && !metaData.isLoading && from === null && to === null) {
+            setFrom(metaData.data.oldestRound.date)
+            setMinDate(metaData.data.oldestRound.date)
+            setTo(metaData.data.newestRound.date)
+            setMaxDate(metaData.data.newestRound.date)
+        }
+
+        if (from !== null && to !== null) {
+            fetchData()
+        }
+        // eslint-disable-next-line
+    }, [metaData.isFetching, metaData.isLoading, from, to, canon])
+
+    if (metaData.isFetching || metaData.isLoading) return
+
+    if (from === null || to === null) return
+
+    if (data === null) return <h1>No data</h1>
 
     return (
         <Layout spacing={1}>
-            <SetDate handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo}>
+            <SetDate handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo} from={from} minDate={minDate} to={to} maxDate={maxDate}>
                 <FormControlLabel control={<Checkbox onChange={handleChangeCanon}/>} label='Only include canon rounds'/>
             </SetDate>
-            <Chart chartType='ComboChart' width={'100%'} height={'600px'} data={jsonToTable(players)} options={options}/>
+            <Chart chartType='ComboChart' width={'100%'} height={'600px'} data={jsonToTable(data)} options={options}/>
         </Layout>
     )
 }

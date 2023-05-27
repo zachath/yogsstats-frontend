@@ -25,7 +25,6 @@ const DateSelector = (props) => {
 }
 
 const SetDateComponent = (props) => {
-
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Stack spacing={4} alignItems={'center'} justifyContent={'center'}>
@@ -34,10 +33,10 @@ const SetDateComponent = (props) => {
                 </Item>
                 <Stack spacing={2} direction={'row'} alignItems={'center'} justifyContent={'center'}>
                     <Item>
-                        <DateSelector onChange={props.handleChangeFrom} label={'From date'} value={'2022-10-23'} minDate={'2022-10-23'}/>
+                        <DateSelector onChange={props.handleChangeFrom} label={'From date'} value={props.from} minDate={props.minDate} maxDate={props.maxDate}/>
                     </Item>
                     <Item>
-                        <DateSelector onChange={props.handleChangeTo} label={'To date'} value={new Date()} minDate={'2022-10-23'} maxDate={new Date()}/>
+                        <DateSelector onChange={props.handleChangeTo} label={'To date'} value={props.to} minDate={props.minDate} maxDate={props.maxDate}/>
                     </Item>
                 </Stack>
                 <Stack spacing={2} direction={'row'} alignItems={'center'} justifyContent={'center'}>
