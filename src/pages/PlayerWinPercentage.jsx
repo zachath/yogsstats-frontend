@@ -108,7 +108,7 @@ const PlayerWinPercentage = () => {
             let teams = []
             for (let key in teamData.data.teams) {
                 let team = teamData.data.teams[key].team 
-                if (team !== 'none' && team !== 'bees') {
+                if (team !== 'none') {
                     teams.push(team)
                 }
             }
