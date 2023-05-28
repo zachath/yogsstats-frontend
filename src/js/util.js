@@ -39,3 +39,8 @@ export async function getTeams() {
     const { data } = await axios.get('http://localhost:8080/stats/ttt/teams')
     return data
 }
+
+export async function getRoles() {
+    const { data } = await axios.get('http://localhost:8080/stats/ttt/roles?canWin=true')
+    return data
+}

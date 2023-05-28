@@ -31,8 +31,6 @@ const options = {
 const PlayerWinPercentage = () => {
     const metaData = useQuery('meta', Utils.getMetaData);
 
-    const [teams, setTeams] = useState([])
-
     const [from, setFrom] = useState(null)
     const handleChangeFrom = (e) => {
         setFrom(Utils.buildDate(e.$d))
@@ -84,6 +82,7 @@ const PlayerWinPercentage = () => {
 
     const teamData = useQuery('teamQuery', Utils.getTeams)
     const [team, setTeam] = useState('');
+    const [teams, setTeams] = useState([])
     const handleChangeTeam = (event) => {
         setTeam(event.target.value);
     };

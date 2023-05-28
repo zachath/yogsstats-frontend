@@ -3,8 +3,9 @@ import { Chart } from "react-google-charts";
 
 import Layout from "../components/Layout";
 import SetDate from '../components/SetDateComponent'
-import * as Utils from './js/util'
+import * as Utils from '../js/util'
 import RoleSelect from '../components/RoleWinPercentage/RoleSelect'
+import { useQuery } from "react-query";
 
 const options = {
     title: 'Players win percentage as each role (Rounds played in parentheses)',
@@ -28,19 +29,23 @@ const options = {
 }
 
 const PlayerWinPercentage = () => {
-    const [data, setData] = useState([])
-    const [roles, setRoles] = useState([])
+    const metaData = useQuery('meta', Utils.getMetaData);
 
-    const [from, setFrom] = useState('2022-10-23')
+    const [from, setFrom] = useState(null)
     const handleChangeFrom = (e) => {
         setFrom(Utils.buildDate(e.$d))
     }
-    const [to, setTo] = useState(Utils.buildDate(new Date()))
+    const [minDate, setMinDate] = useState(null)
+
+    const [to, setTo] = useState(null)
     const handleChangeTo = (e) => {
         setTo(Utils.buildDate(e.$d))
     }
+    const [maxDate, setMaxDate] = useState(null)
 
-    const [role, setRole] = useState('innocent');
+    const roleData = useQuery('roleQuery', Utils.getRoles)
+    const [roles, setRoles] = useState([])
+    const [role, setRole] = useState('');
     const handleChangeRole = (event) => {
         setRole(event.target.value);
     };
@@ -82,21 +87,9 @@ const PlayerWinPercentage = () => {
         return results
     }
 
-    const fetchRoles = () => {
-        fetch('http://localhost:8080/stats/ttt/roles?canWin=true')
-            .then((response) => response.json())
-            .then((data) => {
-                let roles = data.roles
-                setRoles(roles)
-                setRole(roles[0])
-            })
-            .catch((err) => {
-                console.log(err.message)
-            })
-    }
-
-    const handleFetch = () => {
-        fetch('http://localhost:8080/stats/ttt/roleWinPercentage?round=true&from='+from+'&to='+to+'&role='+role)
+    const [data, setData] = useState([])
+    const fetchData = () => {
+        fetch(`http://localhost:8080/stats/ttt/roleWinPercentage?round=true&from=${from}&to=${to}&role=${role}`)
             .then((response) => response.json())
             .then((data) => {
                 setData(jsonToTable(data.players))
@@ -106,20 +99,35 @@ const PlayerWinPercentage = () => {
             })
     }
     useEffect(() => {
-        handleFetch()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [from, to, role])
+        if (!metaData.isFetching && !metaData.isLoading && from === null && to === null) {
+            setFrom(metaData.data.oldestRound.date)
+            setMinDate(metaData.data.oldestRound.date)
+            setTo(metaData.data.newestRound.date)
+            setMaxDate(metaData.data.newestRound.date)
+        }
 
-    if (roles.length === 0) {
-        fetchRoles()
-        handleFetch()
-        return
-    }
+        if (!roleData.isFetching && !roleData.isLoading && role === '') {
+            let roles = roleData.data.roles
+            setRoles(roles)
+            setRole(roles[0])
+        }
+
+        if (from !== null && to !== null && role !== '') {
+            fetchData()
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [metaData.isFetching, metaData.isLoading, from, to, role])
+
+    if (metaData.isFetching || metaData.isLoading) return
+
+    if (from === null || to === null || role === '') return
+
+    if (data === null) return <h1>No data</h1>
 
     return (
         <Layout>
             <h1>Role win percentage</h1>
-            <SetDate refresh={handleFetch} handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo}>
+            <SetDate handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo} from={from} minDate={minDate} to={to} maxDate={maxDate}>
                 <RoleSelect value={role} roles={roles} handleChangeRole={handleChangeRole}/>
             </SetDate>
             <Chart chartType='ComboChart' width={'100%'} height={'600px'} data={data} options={options}/>
