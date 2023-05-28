@@ -14,7 +14,7 @@ const MainPage = () => {
     const [newestDate, setNewestDate] = useState(null)
 
     const handleFetch = () => {
-        fetch('http://localhost:8080/stats/ttt/meta')
+        fetch('https://yogsstats.com/stats/ttt/meta')
             .then((response) => response.json())
             .then((data) => {
                 setRoundCount(data.roundCount)
@@ -99,7 +99,8 @@ const MainPage = () => {
                         </AccordionSummary>
                         <AccordionDetails>
                             <Typography>
-                                TODO
+                                Displays the win percentage for traitor combinations, or "buddies", the current player is placed in the middle with their worst & best traitor buddies to the left & right of them respectively.
+                                To change the current player, use the select menu.
                             </Typography>
                         </AccordionDetails>
                     </Accordion>
