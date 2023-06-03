@@ -40,7 +40,7 @@ const TraitorComboWinPercentage = () => {
 
     const [data, setData] = useState(null)
     const fetchData = () => {
-        fetch(`http://localhost:8080/stats/ttt/traitorCombos?round=true&from=${from}&to=${to}&player=${player}`)
+        fetch(`https://api.yogsstats.com/stats/ttt/traitorCombos?round=true&from=${from}&to=${to}&player=${player}`)
             .then((response) => response.json())
             .then((data) => setData(data))
             .catch((err) => {

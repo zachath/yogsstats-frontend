@@ -76,7 +76,7 @@ const DetectiveWinPercentage = () => {
 
     const [data, setData] = useState(null)
     const fetchData = () => {
-        fetch(`http://localhost:8080/stats/ttt/detectiveWinPercentage?round=true&canon=${canon}&from=${from}&to=${to}`)
+        fetch(`https://api.yogsstats.com/stats/ttt/detectiveWinPercentage?round=true&canon=${canon}&from=${from}&to=${to}`)
             .then((response) => response.json())
             .then((data) => setData(data.players))
     }

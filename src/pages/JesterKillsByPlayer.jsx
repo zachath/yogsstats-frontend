@@ -40,7 +40,7 @@ const JesterKillsByPlayer = () => {
 
     const [data, setData] = useState([])
     const fetchData = () => {
-        fetch(`http://localhost:8080/stats/ttt/jesterKills?from=${from}&to=${to}`)
+        fetch(`https://api.yogsstats.com/stats/ttt/jesterKills?from=${from}&to=${to}`)
             .then((response) => response.json())
             .then((data) => setData(data.players))
             .catch((err) => {

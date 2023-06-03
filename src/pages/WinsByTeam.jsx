@@ -43,7 +43,7 @@ const WinsByTeam = () => {
 
     const [data, setData] = useState([])
     const fetchData = () => {
-        fetch(`http://localhost:8080/stats/ttt/teamWins?from=${from}&to=${to}`)
+        fetch(`https://api.yogsstats.com/stats/ttt/teamWins?from=${from}&to=${to}`)
             .then((response) => response.json())
             .then((data) => setData(jsonToTable(data.teams)))
             .catch((err) => {

@@ -89,7 +89,7 @@ const PlayerWinPercentage = () => {
 
     const [data, setData] = useState(null)
     const fetchData = () => {
-        fetch(`http://localhost:8080/stats/ttt/playerWinPercentage?round=true&from=${from}&to=${to}&team=${team}`)
+        fetch(`https://api.yogsstats.com/stats/ttt/playerWinPercentage?round=true&from=${from}&to=${to}&team=${team}`)
             .then((response) => response.json())
             .then((data) => setData(jsonToTable(data.players)))
             .catch((err) => {

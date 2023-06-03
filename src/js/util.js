@@ -31,21 +31,21 @@ export function validDateRange(from, to) {
 }
 
 export async function getMetaData() {
-    const { data } = await axios.get('https://yogsstats.com/stats/ttt/meta')
+    const { data } = await axios.get('https://api.yogsstats.com/stats/ttt/meta')
     return data
 }
 
 export async function getTeams() {
-    const { data } = await axios.get('http://localhost:8080/stats/ttt/teams')
+    const { data } = await axios.get('https://api.yogsstats.com/stats/ttt/teams')
     return data
 }
 
 export async function getRoles() {
-    const { data } = await axios.get('http://localhost:8080/stats/ttt/roles?canWin=true')
+    const { data } = await axios.get('https://api.yogsstats.com/stats/ttt/roles?canWin=true')
     return data
 }
 
 export async function getPlayers() {
-    const { data } = await axios.get('http://localhost:8080/stats/ttt/players')
+    const { data } = await axios.get('hhttps://api.yogsstats.com/stats/ttt/players')
     return data
 }
