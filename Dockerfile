@@ -14,4 +14,4 @@ ENV SSL_KEY_FILE=/etc/letsencrypt/live/yogsstats.com/privkey.pem
 
 EXPOSE 3000
 
-CMD npm run build
+CMD [ "npx", "serve", "build"]
