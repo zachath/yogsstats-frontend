@@ -46,6 +46,6 @@ export async function getRoles() {
 }
 
 export async function getPlayers() {
-    const { data } = await axios.get('hhttps://api.yogsstats.com/stats/ttt/players')
+    const { data } = await axios.get('https://api.yogsstats.com/stats/ttt/players')
     return data
 }
