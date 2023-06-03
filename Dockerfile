@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:18-alpine as build
 
 WORKDIR /app
 
@@ -6,12 +6,14 @@ COPY . .
 
 RUN npm install --legacy-peer-deps
 
-ENV HTTPS=true
-ENV SSL_CRT_FILE=/etc/letsencrypt/live/yogsstats.com/fullchain.pem
-ENV SSL_KEY_FILE=/etc/letsencrypt/live/yogsstats.com/privkey.pem
-
 RUN npm run build
+
+FROM nginx:stable-alpine
+
+COPY --from=build /app/build /usr/share/nginx/html
+
+COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 3000
 
-CMD [ "npx", "serve", "build"]
+CMD ["nginx", "-g", "daemon off;"]
