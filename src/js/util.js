@@ -36,7 +36,7 @@ export async function getMetaData() {
 }
 
 export async function getTeams() {
-    const { data } = await axios.get('https://api.yogsstats.com/stats/ttt/teams')
+    const { data } = await axios.get('https://api.yogsstats.com/stats/ttt/teams?canWin=true')
     return data
 }
 
