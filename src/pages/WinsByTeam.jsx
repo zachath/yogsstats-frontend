@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Layout from "../components/Layout";
 import { Chart } from "react-google-charts";
 
 import SetDate from '../components/SetDateComponent'
@@ -81,10 +80,10 @@ const WinsByTeam = () => {
     if (data === null) return <h1>No data</h1>
 
     return (
-        <Layout>
+        <>
             <SetDate handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo} from={from} minDate={minDate} to={to} maxDate={maxDate}/>
             <Chart chartType="PieChart" data={data} options={options} width={'100%'} height={'600px'}/>
-        </Layout>
+        </>
     )
 }
 

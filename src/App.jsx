@@ -12,6 +12,7 @@ import PlayerPage from './pages/PlayerWinPercentage';
 import RolePage from './pages/RoleWinPercentage';
 import TraitorPage from './pages/TraitorComboWinPercentage';
 import WinsPage from './pages/WinsByTeam'
+import Layout from './components/Layout';
 
 const theme = createTheme({
     palette: {
@@ -40,13 +41,15 @@ export default function App() {
         <ThemeProvider theme={theme}>
             <CssBaseline />
             <Routes>
-                <Route exact path="/" element={<MainPage />}></Route>
-                <Route exact path="/detective-win-percentage" element={<DetectivePage />}></Route>
-                <Route exact path="/jester-kills-by-player" element={<JesterPage />}></Route>
-                <Route exact path="/player-win-percentage" element={<PlayerPage />}></Route>
-                <Route exact path="/role-win-percentage" element={<RolePage />}></Route>
-                <Route exact path="/traitor-combo-win-percentge" element={<TraitorPage />}></Route>
-                <Route exact path="/wins-by-team" element={<WinsPage />}></Route>
+                <Route path='' element={<Layout />}>
+                    <Route exact path="/" element={<MainPage />}></Route>
+                    <Route exact path="/wins-by-team" element={<WinsPage />}></Route>
+                    <Route exact path="/detective-win-percentage" element={<DetectivePage />}></Route>
+                    <Route exact path="/player-win-percentage" element={<PlayerPage />}></Route>
+                    <Route exact path="/traitor-combo-win-percentage" element={<TraitorPage />}></Route>
+                    <Route exact path="/role-win-percentage" element={<RolePage />}></Route>
+                    <Route exact path="/jester-kills-by-player" element={<JesterPage />}></Route>
+                </Route>
             </Routes>
         </ThemeProvider>
     </QueryClientProvider>

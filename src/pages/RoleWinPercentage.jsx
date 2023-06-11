@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Chart } from "react-google-charts";
 
-import Layout from "../components/Layout";
 import SetDate from '../components/SetDateComponent'
 import * as Utils from '../js/util'
 import RoleSelect from '../components/RoleWinPercentage/RoleSelect'
@@ -125,13 +124,13 @@ const PlayerWinPercentage = () => {
     if (data === null) return <h1>No data</h1>
 
     return (
-        <Layout>
+        <>
             <h1>Role win percentage</h1>
             <SetDate handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo} from={from} minDate={minDate} to={to} maxDate={maxDate}>
                 <RoleSelect value={role} roles={roles} handleChangeRole={handleChangeRole}/>
             </SetDate>
             <Chart chartType='ComboChart' width={'100%'} height={'600px'} data={data} options={options}/>
-        </Layout>
+        </>
     )
 }
 

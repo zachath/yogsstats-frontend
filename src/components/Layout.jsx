@@ -1,6 +1,7 @@
 import React from "react";
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles'
+import { Outlet } from 'react-router-dom'
 
 import SideBar from "./Sidebar";
 import TopBar from "./TopBar";
@@ -13,14 +14,14 @@ const Main = styled('main')(({ theme }) => ({
     padding: theme.spacing(3)
 }))
 
-const Layout = ({ children }) => {
+const Layout = () => {
     return (
         <Box sx={{ display: 'flex' }}>
             <TopBar sideBarWidth={sideBarWidth}/>
             <SideBar sideBarWidth={sideBarWidth}/>
             <Main>
                 <TopBarHeader />
-                {children}
+                <Outlet />
             </Main>
         </Box>
     )

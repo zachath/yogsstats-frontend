@@ -25,7 +25,7 @@ const pages = [
     },
     {
         text: 'Traitor combo win%',
-        route: '/traitor-combo-win-percentge'
+        route: '/traitor-combo-win-percentage'
     },
     {
         text: 'Role win%',

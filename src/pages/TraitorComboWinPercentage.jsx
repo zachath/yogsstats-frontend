@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Layout from "../components/Layout";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Grid from '@mui/material/Grid';
@@ -77,16 +76,16 @@ const TraitorComboWinPercentage = () => {
     let [b, w] = getWorstAndBestCombos(data.combos)
     
     if (b === undefined || w === undefined) return (
-        <Layout>
+        <>
             <SetDate handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo} from={from} minDate={minDate} to={to} maxDate={maxDate}>
                 <PlayerSelect value={player} players={players} handleChangePlayer={handleChangePlayer}/>
             </SetDate>
             <h1>No data available in specified range</h1>
-        </Layout>
+        </>
     )
 
     return (
-        <Layout>
+        <>
             <h1>Traitor combo win percentage</h1>
             <SetDate handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo} from={from} minDate={minDate} to={to} maxDate={maxDate}>
                 <PlayerSelect value={player} players={players} handleChangePlayer={handleChangePlayer}/>
@@ -123,7 +122,7 @@ const TraitorComboWinPercentage = () => {
                     </Card>
                 </Grid>
             </Grid>
-        </Layout>
+        </>
     )
 }
 

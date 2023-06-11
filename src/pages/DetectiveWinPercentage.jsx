@@ -3,7 +3,6 @@ import { Chart } from "react-google-charts";
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
-import Layout from "../components/Layout";
 import SetDate from '../components/SetDateComponent'
 import * as Utils from '../js/util'
 import { useQuery } from "react-query";
@@ -102,12 +101,12 @@ const DetectiveWinPercentage = () => {
     if (data === null) return <h1>No data</h1>
 
     return (
-        <Layout spacing={1}>
+        <>
             <SetDate handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo} from={from} minDate={minDate} to={to} maxDate={maxDate}>
                 <FormControlLabel control={<Checkbox onChange={handleChangeCanon}/>} label='Only include canon rounds'/>
             </SetDate>
             <Chart chartType='ComboChart' width={'100%'} height={'600px'} data={jsonToTable(data)} options={options}/>
-        </Layout>
+        </>
     )
 }
 

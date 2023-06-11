@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Typography } from "@mui/material";
-import Layout from "../components/Layout";
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -32,7 +31,7 @@ const MainPage = () => {
     }
 
     return (
-        <Layout>
+        <>
             <h1>Welcome to YogsStats, the home of Yogscast related TTT stats!</h1>
             <Grid container justifyContent="center" spacing={10}>
                 <Grid item xs={6}>
@@ -139,7 +138,7 @@ const MainPage = () => {
                     </Accordion>
                 </Grid>
             </Grid>
-        </Layout>
+        </>
     )
 }
 
