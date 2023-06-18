@@ -7,6 +7,12 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Grid from '@material-ui/core/Grid';
 import Link from '@mui/material/Link';
 
+const EmptySpace = () => {
+    return (
+        <Typography>&nbsp;</Typography>
+    )
+}
+
 const MainPage = () => {
     const [roundCount, setRoundCount] = useState(0)
     const [oldestDate, setOldestDate] = useState(null)
@@ -42,15 +48,15 @@ const MainPage = () => {
                         possibility to time splice the data by setting the from and to date, use it if you want to only include rounds from a specific year, month,
                         week or even day.
                     </Typography>
+                    <EmptySpace />
                     <Typography>
-                        They don't take the game seriously so obviously neither should these stats :)
+                        They don't take the game seriously so obviously neither should these stats.
                     </Typography>
+                    <EmptySpace />
                     <Typography>
                         Currently there are <strong>{roundCount}</strong> rounds stored, the oldest of which is from <strong>{oldestDate}</strong> and the latest from <strong>{newestDate}</strong>
                     </Typography>
-                    <Typography>
-                        This site is unofficial and unrelated to the Yogscast. For any questions, send a dm to u/SgtTorran on reddit. <em>I have a tiny penis</em>
-                    </Typography>
+                    <EmptySpace />
                     <Typography>
                         Inspired by the work of <Link href="https://www.reddit.com/user/TheImminentFate">u/TheImminentFate</Link> and <Link href="https://www.reddit.com/user/Poissonza">u/Poissonza</Link> on Reddit.
                     </Typography>
