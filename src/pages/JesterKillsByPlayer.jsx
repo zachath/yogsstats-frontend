@@ -1,26 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Chart } from "react-google-charts";
+import { Doughnut } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
 import SetDate from '../components/SetDateComponent'
 import * as Utils from '../js/util'
 import { useQuery } from "react-query";
 
-const options = {
-    titleTextStyle: {
-        color: 'white'
-    },
-    backgroundColor: '#121212',
-    legend: 'none',
-    pieSliceText: 'label'
-}
-
-function jsonToTable(data) {
-    let results = [["Player", "Kills"]]
-    for (let key in data) {
-        results.push([data[key].player, data[key].kills])
-    }
-    return results
-}
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const JesterKillsByPlayer = () => {
     const metaData = useQuery('meta', Utils.getMetaData);
@@ -37,16 +23,17 @@ const JesterKillsByPlayer = () => {
     }
     const [maxDate, setMaxDate] = useState(null)
 
-    const [data, setData] = useState([])
-    const fetchData = () => {
-        fetch(`https://api.yogsstats.com/stats/ttt/jesterKills?from=${from}&to=${to}`)
-            .then((response) => response.json())
-            .then((data) => setData(data.players))
-            .catch((err) => {
-                console.log(err.message)
-            })
-    }
+    const [apiData, setApiData] = useState([])
     useEffect(() => {
+        const fetchApiData = () => {
+            fetch(`https://api.yogsstats.com/stats/ttt/jesterKills?from=${from}&to=${to}`)
+                .then((response) => response.json())
+                .then((json) => setApiData(json))
+                .catch((err) => {
+                    console.log(err.message)
+                })
+        }
+
         if (!metaData.isFetching && !metaData.isLoading && from === null && to === null) {
             setFrom(metaData.data.oldestRound.date)
             setMinDate(metaData.data.oldestRound.date)
@@ -54,22 +41,71 @@ const JesterKillsByPlayer = () => {
             setMaxDate(metaData.data.newestRound.date)
         }
 
-        if (from !== null && to !== null) {
-            fetchData()
+        if (from && to) {
+            fetchApiData()
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [metaData.isFetching, metaData.isLoading, from, to])
 
-    if (metaData.isFetching || metaData.isLoading) return
+    if (apiData.players === undefined) return
 
-    if (from === null || to === null) return
+    //stupid
+    const colors = {
+        "Lewis": "red",
+        "Ben": "blue",
+        "Duncan": "green",
+        "Ravs": "purple",
+        "Pedguin": "orange",
+        "Boba": "yellow",
+        "Breeh": "pink",
+        "Daltos": "teal",
+        "Rythian": "cyan",
+        "RTGame": "magenta",
+        "Kirsty": "brown",
+        "Shadow": "gray",
+        "Lolip": "lime",
+        "Zoey": "olive",
+        "Zylus": "navy",
+        "Osie": "maroon",
+        "Nilesy": "gold",
+        "Gee": "silver"
+      }
 
-    if (data === null) return <h1>No data</h1>
+    const data = {
+        labels: apiData.players.map(x => x.player+" "+(x.kills*100 / apiData.totalJesterWins).toFixed(2)+"%"),
+        datasets: [
+            {
+                label: 'Kills',
+                data: apiData.players.map(x => x.kills),
+                backgroundColor: apiData.players.map(x =>  colors[x.player]),
+                borderColor: 'black',
+                borderWidth: 1
+            }
+        ]
+    }
+    const options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                    position: 'right',
+                    rtl : true,
+                    labels: {
+                    usePointStyle: true,
+                    pointStyle: 'circle',
+                    padding: 20,
+                }
+            }
+        },
+    }
 
     return (
         <>
             <SetDate handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo} from={from} minDate={minDate} to={to} maxDate={maxDate}/>
-            <Chart chartType="PieChart" data={jsonToTable(data)} options={options} width={'100%'} height={'600px'}/>
+            <h3>{apiData.totalJesterWins} jester wins</h3>
+            <div style={{height:'450px',width:'900px'}}>
+                <Doughnut data={data} options={options} />
+            </div>
         </>
     )
 }

@@ -61,7 +61,7 @@ const WinsByTeam = () => {
         labels: apiData.teams.map(x => x.team+" "+(x.wins*100 / apiData.total).toFixed(2)+"%"),
         datasets: [
             {
-                label: 'Wins by team',
+                label: 'Wins',
                 data: apiData.teams.map(x => x.wins),
                 backgroundColor: teamData.data.teams.map(x => x.colour),
                 borderColor: 'black',
@@ -73,21 +73,22 @@ const WinsByTeam = () => {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-        legend: {
-                position: 'right',
-                rtl : true,
-                labels: {
-                usePointStyle: true,
-                pointStyle: 'circle',
-                padding: 20,
+            legend: {
+                    position: 'right',
+                    rtl : true,
+                    labels: {
+                    usePointStyle: true,
+                    pointStyle: 'circle',
+                    padding: 20,
+                }
             }
-        }
-         },
+        },
     }
 
     return (
         <>
             <SetDate handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo} from={from} minDate={minDate} to={to} maxDate={maxDate}></SetDate>
+            <h3>{apiData.total} rounds</h3>
             <div style={{height:'450px',width:'900px'}}>
                 <Doughnut data={data} options={options} />
             </div>
