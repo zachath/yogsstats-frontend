@@ -56,20 +56,19 @@ const DetectiveWinPercentage = () => {
         })
         return json
     }
-
+    
     function addAverage(json) {
         let weights = 0
         let dividend = 0
-
+    
         for (let key in json.players) {
-            console.log(key)
             weights += json.players[key].roundsPlayed
             dividend += json.players[key].roundsPlayed * json.players[key].winPercentage
         }
-
+    
         let average = dividend / weights
-
-        json.players.push({player: 'Average', winPercentage: average})
+    
+        json.players.push({player: 'Average', winPercentage: average, roundsPlayed: 0})
         return json
     }
 
@@ -99,40 +98,24 @@ const DetectiveWinPercentage = () => {
 
     if (apiData.players === undefined) return
 
-    const options = {
-        responsive: true,
-        scales: {
-            x: {
-                grid: {
-                  color: "rgba(255, 255, 255, 0.08)"
-                }
-              },
-              y: {
-                grid: {
-                  color: "rgba(255, 255, 255, 0.08)"
-                }
-              }
-        }
-    }
-
     const data = {
         labels: apiData.players.map(x => x.player === 'Average' ? x.player : `${x.player} (${x.roundsPlayed})`),
         datasets: [
           {
             label: 'Detective win percentage',
-            data: apiData.players.map(x => x.winPercentage),
+            data: apiData.players.map(x => x.winPercentage*100),
             backgroundColor: apiData.players.map(x => x.player === 'Average' ? 'green' : 'rgba(255, 99, 132, 0.5)'),
           },
         ],
         borderWidth: 1
-      }
+    }
 
     return (
         <>
             <SetDate handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo} from={from} minDate={minDate} to={to} maxDate={maxDate}>
                 <FormControlLabel control={<Checkbox onChange={handleChangeCanon}/>} label='Only include canon rounds'/>
             </SetDate>
-            <Bar options={options} data={data} height={"75%"} />
+            <Bar options={Utils.barOptions} data={data} height={"75%"} />
         </>
     )
 }

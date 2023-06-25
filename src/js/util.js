@@ -49,3 +49,19 @@ export async function getPlayers() {
     const { data } = await axios.get('https://api.yogsstats.com/stats/ttt/players')
     return data
 }
+
+export const barOptions = {
+    responsive: true,
+    scales: {
+        x: {
+            grid: {
+              color: "rgba(255, 255, 255, 0.08)"
+            }
+          },
+          y: {
+            grid: {
+              color: "rgba(255, 255, 255, 0.08)"
+            }
+        }
+    }
+}

@@ -1,31 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { Chart } from "react-google-charts";
 
 import SetDate from '../components/SetDateComponent'
 import * as Utils from '../js/util'
 import TeamSelect from '../components/PlayerWinPercentagePage/TeamSelect'
 import { useQuery } from "react-query";
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+  } from 'chart.js';
+  import { Bar } from 'react-chartjs-2'
 
-const options = {
-    title: 'Players win percentage as each team (Rounds played in parentheses)',
-    vAxis: { title: 'Player win percentage', textStyle: { color: 'white' }, titleTextStyle: {color: 'white'}, viewWindow: { min: 0, max: 1}},
-    hAxis: { title: 'Player', textStyle: { color: 'white' }, titleTextStyle: {color: 'white'}},
-    seriesType: 'bars',
-    series: {1: { type: 'line' }},
-    titleTextStyle: {color: 'white'},
-    legend: { textStyle: { color: 'white' } },
-    backgroundColor: '#121212',
-    annotations: {
-        stem: {
-            color: 'transparent',
-            length: 120
-        },
-        textStyle: {
-            color: '#9E9E9E',
-            fontSize: 18
-        }
-    },
-}
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+  );
 
 const PlayerWinPercentage = () => {
     const metaData = useQuery('meta', Utils.getMetaData);
@@ -42,60 +39,50 @@ const PlayerWinPercentage = () => {
     }
     const [maxDate, setMaxDate] = useState(null)
 
-    function jsonToTable(data) {
-        let results = [['Player', 'Win percentage', 'Average (weighted)']]
-        if (data.length === 0) {
-            results[0].push({role: 'annotation', type: 'string'})
-            results.push(['', 0, 0, 'No data'])
-        }
-    
-        let weights = 0
-        let dividend = 0
-
-        for (let key in data) {
-            let val = 0
-            for (let k in data[key].teams) {
-                if (data[key].teams[k].team === team) {
-                    val = data[key].teams[k].winPercentage
-                }
-            }
-
-            weights += data[key].roundsPlayed
-            dividend += data[key].roundsPlayed * val
-        }
-
-        let average = dividend / weights
-
-        for (let key in data) {
-            let val = 0
-            for (let k in data[key].teams) {
-                if (data[key].teams[k].team === team) {
-                    val = data[key].teams[k].winPercentage
-                }
-            }
-            results.push([data[key].player+` (${data[key].roundsPlayed})`, val, average])
-        }
-    
-        return results
-    }
-
     const teamData = useQuery('teamQuery', Utils.getTeams)
-    const [team, setTeam] = useState('');
+    const [team, setTeam] = useState(null);
     const [teams, setTeams] = useState([])
     const handleChangeTeam = (event) => {
         setTeam(event.target.value);
     };
 
-    const [data, setData] = useState(null)
-    const fetchData = () => {
-        fetch(`https://api.yogsstats.com/stats/ttt/playerWinPercentage?round=true&from=${from}&to=${to}&team=${team}`)
-            .then((response) => response.json())
-            .then((data) => setData(jsonToTable(data.players)))
-            .catch((err) => {
-                console.log(err.message)
-            })
+    function sort(json) {
+        json.players.sort((a, b) => {
+            if (a.teams[0].winPercentage === b.teams[0].winPercentage) {
+                return a.roundsPlayed - b.roundsPlayed
+            } else {
+                return a.teams[0].winPercentage - b.teams[0].winPercentage
+            }
+        })
+        return json
     }
+    
+    function addAverage(json) {
+        let weights = 0
+        let dividend = 0
+    
+        for (let key in json.players) {
+            weights += json.players[key].roundsPlayed
+            dividend += json.players[key].roundsPlayed * json.players[key].teams[0].winPercentage
+        }
+    
+        let average = dividend / weights
+    
+        json.players.push({player: 'Average', teams: [{winPercentage: average}]})
+        return json
+    }
+
+    const [apiData, setApiData] = useState([])
     useEffect(() => {
+        const fetchApiData = () => {
+            fetch(`https://api.yogsstats.com/stats/ttt/playerWinPercentage?round=true&from=${from}&to=${to}&team=${team}`)
+                .then((response) => response.json())
+                .then((json) => setApiData(sort(addAverage(json))))
+                .catch((err) => {
+                    console.log(err.message)
+                })
+        }
+
         if (!metaData.isFetching && !metaData.isLoading && from === null && to === null) {
             setFrom(metaData.data.oldestRound.date)
             setMinDate(metaData.data.oldestRound.date)
@@ -103,7 +90,7 @@ const PlayerWinPercentage = () => {
             setMaxDate(metaData.data.newestRound.date)
         }
 
-        if (!teamData.isFetching && !teamData.isLoading && team === '') {
+        if (!teamData.isFetching && !teamData.isLoading && team === null) {
             let teams = []
             for (let key in teamData.data.teams) {
                 let team = teamData.data.teams[key].team 
@@ -115,25 +102,32 @@ const PlayerWinPercentage = () => {
             setTeam(teams[0])
         }
 
-        if (from !== null && to !== null && team !== '') {
-            fetchData()
+        if (from && to && team) {
+            fetchApiData()
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [metaData.isFetching, metaData.isLoading, from, to, team])
 
-    if (metaData.isFetching || metaData.isLoading) return
+    if (apiData.players === undefined) return
 
-    if (from === null || to === null || team === '') return
-
-    if (data === null) return <h1>No data</h1>
+    const data = {
+        labels: apiData.players.map(x => x.player === 'Average' ? x.player : `${x.player} (${x.roundsPlayed})`),
+        datasets: [
+          {
+            label: 'Player win percentage',
+            data: apiData.players.map(x => x.teams[0].winPercentage*100),
+            backgroundColor: apiData.players.map(x => x.player === 'Average' ? 'green' : 'rgba(255, 99, 132, 0.5)'),
+          },
+        ],
+        borderWidth: 1
+    }
 
     return (
         <>
-            <h1>Player win percentage</h1>
             <SetDate handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo} from={from} minDate={minDate} to={to} maxDate={maxDate}>
                 <TeamSelect value={team} teams={teams} handleChangeTeam={handleChangeTeam}/>
             </SetDate>
-            <Chart chartType='ComboChart' width={'100%'} height={'600px'} data={data} options={options}/>
+            <Bar options={Utils.barOptions} data={data} height={"75%"} />
         </>
     )
 }
