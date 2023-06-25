@@ -78,7 +78,7 @@ const MainPage = () => {
                         </AccordionSummary>
                         <AccordionDetails>
                             <Typography>
-                                Displays a bar graph of the win percentage as detective for each player.
+                                Displays a bar graph of the win percentage as detective for each player, amount of rounds played is displayed in parentheses.
                                 On the horizontal axis you'll find the players and on the vertical axis their win percentage.
                                 The weighted average win percentage is displayed in green.
                                 Has the extra option to only include <strong>"canon"</strong> rounds.
@@ -91,7 +91,7 @@ const MainPage = () => {
                         </AccordionSummary>
                         <AccordionDetails>
                             <Typography>
-                                Displays a bar graph of the win percentage for each team for each player.
+                                Displays a bar graph of the win percentage for each team for each player, amount of rounds played is displayed in parentheses.
                                 On the horizontal axis you'll find the players and on the vertical axis their win percentage.
                                 The weighted average win percentage is displayed in green.
                                 To pick what team to display, use the select menu.
@@ -104,7 +104,8 @@ const MainPage = () => {
                         </AccordionSummary>
                         <AccordionDetails>
                             <Typography>
-                                TODO
+                                Displays a bar graph of the win percentage for the current player with each player they have been "traitor buddies" with, amount of rounds played together is displayed in parentheses.
+                                To pick what player to display, use the select menu.
                             </Typography>
                         </AccordionDetails>
                     </Accordion>
@@ -114,7 +115,7 @@ const MainPage = () => {
                         </AccordionSummary>
                         <AccordionDetails>
                             <Typography>
-                                Displays a bar graph of the win percentage for each role for each player.
+                                Displays a bar graph of the win percentage for each role for each player, amount of rounds played is displayed in parentheses.
                                 On the horizontal axis you'll find the players and on the vertical axis their win percentage.
                                 The weighted average win percentage is displayed in green.
                                 To pick what role to display, use the select menu.

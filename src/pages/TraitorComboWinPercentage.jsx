@@ -1,13 +1,28 @@
 import React, { useState, useEffect } from "react";
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Grid from '@mui/material/Grid';
 
 import SetDate from '../components/SetDateComponent'
 import PlayerSelect from "../components/TraitorComboWinPage/PlayerSelect";
 import * as Utils from '../js/util'
-import { CardMedia, Typography } from "@mui/material";
 import { useQuery } from "react-query";
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+  } from 'chart.js';
+  import { Bar } from 'react-chartjs-2'
+
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+  );
 
 const TraitorComboWinPercentage = () => {
     const metaData = useQuery('meta', Utils.getMetaData);
@@ -24,6 +39,17 @@ const TraitorComboWinPercentage = () => {
     }
     const [maxDate, setMaxDate] = useState(null)
 
+    function sort(json) {
+        json.combos[0].entries.sort((a, b) => {
+            if (a.winPercentage === b.winPercentage) {
+                return a.roundsPlayed - b.roundsPlayed
+            } else {
+                return a.winPercentage - b.winPercentage
+            }
+        })
+        return json
+    }
+
     const playersData = useQuery('playerQuery', Utils.getPlayers)
     const [player, setPlayer] = useState('');
     const [players, setPlayers] = useState([])
@@ -31,23 +57,17 @@ const TraitorComboWinPercentage = () => {
         setPlayer(event.target.value);
     };
 
-    const getWorstAndBestCombos = (data) => {
-        let combos = data[0].entries
-        combos.sort((a, b) =>  b.winPercentage - a.winPercentage)
-        return [combos[0], combos[combos.length-1]]
-    }
-
-    const [data, setData] = useState(null)
-    const fetchData = () => {
-        fetch(`https://api.yogsstats.com/stats/ttt/traitorCombos?round=true&from=${from}&to=${to}&player=${player}`)
-            .then((response) => response.json())
-            .then((data) => setData(data))
-            .catch((err) => {
-                console.log(err.message)
-            })
-    }
-
+    const [apiData, setApiData] = useState([])
     useEffect(() => {
+        const fetchApiData = () => {
+            fetch(`https://api.yogsstats.com/stats/ttt/traitorCombos?round=true&from=${from}&to=${to}&player=${player}`)
+                .then((response) => response.json())
+                .then((json) => setApiData(sort(json)))
+                .catch((err) => {
+                    console.log(err.message)
+                })
+        }
+
         if (!metaData.isFetching && !metaData.isLoading && from === null && to === null) {
             setFrom(metaData.data.oldestRound.date)
             setMinDate(metaData.data.oldestRound.date)
@@ -61,67 +81,32 @@ const TraitorComboWinPercentage = () => {
             setPlayer(players[0])
         }
 
-        if (from !== null && to !== null && player !== '') {
-            fetchData()
+        if (from && to && player) {
+            fetchApiData()
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [metaData.isFetching, metaData.isLoading, from, to, player])
 
-    if (metaData.isFetching || metaData.isLoading) return
+    if (apiData.combos === undefined) return
 
-    if (from === null || to === null || player === '') return
-
-    if (data === null) return <h1>No data</h1>
-
-    let [b, w] = getWorstAndBestCombos(data.combos)
-    
-    if (b === undefined || w === undefined) return (
-        <>
-            <SetDate handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo} from={from} minDate={minDate} to={to} maxDate={maxDate}>
-                <PlayerSelect value={player} players={players} handleChangePlayer={handleChangePlayer}/>
-            </SetDate>
-            <h1>No data available in specified range</h1>
-        </>
-    )
+    const data = {
+        labels: apiData.combos[0].entries.map(x => `${x.player} (${x.roundsTogether})`),
+        datasets: [
+          {
+            label: 'Traitor win percentage',
+            data: apiData.combos[0].entries.map(x => x.winPercentage*100),
+            backgroundColor: apiData.combos[0].entries.map(x => 'rgba(255, 99, 132, 0.5)'),
+          },
+        ],
+        borderWidth: 1
+    }
 
     return (
         <>
-            <h1>Traitor combo win percentage</h1>
             <SetDate handleChangeFrom={handleChangeFrom} handleChangeTo={handleChangeTo} from={from} minDate={minDate} to={to} maxDate={maxDate}>
                 <PlayerSelect value={player} players={players} handleChangePlayer={handleChangePlayer}/>
             </SetDate>
-            <Grid justifyContent="center" container spacing={4}>
-                <Grid item>
-                    <Typography>Worst</Typography>
-                    <Card>
-                        <CardMedia component={'img'} image={require(`../components/images/players/${w.player}.jpg`)} height={200}/>
-                        <CardContent>
-                            <Typography>{w.player}</Typography>
-                            <Typography>{(w.winPercentage*100).toFixed(1)}%</Typography>
-                            <Typography>{w.roundsTogether} round(s)</Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
-                <Grid item>
-                    <Card>
-                        <CardMedia component={'img'} image={require(`../components/images/players/${player}.jpg`)} height={300}/>
-                        <CardContent>
-                            <Typography>{player}</Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
-                <Grid item>
-                    <Typography>Best</Typography>
-                    <Card>
-                        <CardMedia component={'img'} image={require(`../components/images/players/${b.player}.jpg`)} height={200}/>
-                        <CardContent>
-                            <Typography>{b.player}</Typography>
-                            <Typography>{(b.winPercentage*100).toFixed(1)}%</Typography>
-                            <Typography>{b.roundsTogether} round(s)</Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
-            </Grid>
+            <Bar options={Utils.barOptions} data={data} height={"75%"} />
         </>
     )
 }
