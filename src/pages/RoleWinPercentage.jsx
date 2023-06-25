@@ -100,7 +100,7 @@ const PlayerWinPercentage = () => {
             fetchApiData()
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [metaData.isFetching, metaData.isLoading, from, to, role])
+    }, [metaData.isFetching, metaData.isLoading, roleData.isFetching, roleData.isLoading, from, to, role])
 
     if (apiData.players === undefined) return
 

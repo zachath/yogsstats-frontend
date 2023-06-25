@@ -85,7 +85,7 @@ const TraitorComboWinPercentage = () => {
             fetchApiData()
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [metaData.isFetching, metaData.isLoading, from, to, player])
+    }, [metaData.isFetching, metaData.isLoading, playersData.isFetching, playersData.isLoading, from, to, player])
 
     if (apiData.combos === undefined) return
 
