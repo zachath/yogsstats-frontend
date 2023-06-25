@@ -80,7 +80,7 @@ const MainPage = () => {
                             <Typography>
                                 Displays a bar graph of the win percentage as detective for each player.
                                 On the horizontal axis you'll find the players and on the vertical axis their win percentage.
-                                The weighted average win percentage is displayed as a line drawn horizontally through the graph.
+                                The weighted average win percentage is displayed in green.
                                 Has the extra option to only include <strong>"canon"</strong> rounds.
                             </Typography>
                         </AccordionDetails>
@@ -93,7 +93,7 @@ const MainPage = () => {
                             <Typography>
                                 Displays a bar graph of the win percentage for each team for each player.
                                 On the horizontal axis you'll find the players and on the vertical axis their win percentage.
-                                The weighted average win percentage is displayed as a line drawn horizontally through the graph.
+                                The weighted average win percentage is displayed in green.
                                 To pick what team to display, use the select menu.
                             </Typography>
                         </AccordionDetails>
@@ -104,8 +104,7 @@ const MainPage = () => {
                         </AccordionSummary>
                         <AccordionDetails>
                             <Typography>
-                                Displays the win percentage for traitor combinations, or "buddies", the current player is placed in the middle with their worst & best traitor buddies to the left & right of them respectively.
-                                To change the current player, use the select menu.
+                                TODO
                             </Typography>
                         </AccordionDetails>
                     </Accordion>
@@ -117,7 +116,7 @@ const MainPage = () => {
                             <Typography>
                                 Displays a bar graph of the win percentage for each role for each player.
                                 On the horizontal axis you'll find the players and on the vertical axis their win percentage.
-                                The weighted average win percentage is displayed as a line drawn horizontally through the graph.
+                                The weighted average win percentage is displayed in green.
                                 To pick what role to display, use the select menu.
                             </Typography>
                         </AccordionDetails>
